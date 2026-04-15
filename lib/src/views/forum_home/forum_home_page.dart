@@ -7,10 +7,7 @@ import 'widgets/sidebar_widget.dart';
 class ForumHomePage extends StatelessWidget {
   final Widget child;
 
-  const ForumHomePage({
-    super.key,
-    required this.child,
-  });
+  const ForumHomePage({super.key, required this.child});
 
   @override
   /// Builds the forum shell and delegates responsive behavior to shared layout.

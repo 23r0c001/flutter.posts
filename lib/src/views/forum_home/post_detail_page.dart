@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class PostDetailPage extends StatelessWidget {
   final String postId;
 
-  const PostDetailPage({
-    super.key,
-    required this.postId,
-  });
+  const PostDetailPage({super.key, required this.postId});
 
   @override
   /// Minimal placeholder detail view sourced from route path parameter `postId`.

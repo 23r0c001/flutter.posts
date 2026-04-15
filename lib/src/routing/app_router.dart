@@ -6,8 +6,6 @@ import '../views/forum_home/forum_home_page.dart';
 import '../views/forum_home/post_detail_page.dart';
 import '../views/forum_home/widgets/post_list.dart';
 
-
-
 /// Top-level app router.
 /// Uses a shell so sidebar/resources persist while center content routes change.
 final GoRouter appRouter = GoRouter(
@@ -20,10 +18,8 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/',
           // Forum feed entry route.
-          pageBuilder: (context, state) => _buildAdaptivePage(
-            state: state,
-            child: const PostList(),
-          ),
+          pageBuilder: (context, state) =>
+              _buildAdaptivePage(state: state, child: const PostList()),
         ),
         GoRoute(
           path: '/posts/:postId',
@@ -50,10 +46,7 @@ Page<void> _buildAdaptivePage({
 }) {
   // Web gets instant route swaps so old content does not linger/fade.
   if (kIsWeb) {
-    return NoTransitionPage<void>(
-      key: state.pageKey,
-      child: child,
-    );
+    return NoTransitionPage<void>(key: state.pageKey, child: child);
   }
 
   // Mobile gets a forward push slide for a native navigation feel.
@@ -64,6 +57,7 @@ Page<void> _buildAdaptivePage({
     reverseTransitionDuration: const Duration(milliseconds: 180),
     transitionsBuilder: (context, animation, secondaryAnimation, routeChild) {
       // Enter from right to left; mirrors common Android/iOS push patterns.
+      // TODO: Add left to right for back navigation
       final slideTween = Tween<Offset>(
         begin: const Offset(1, 0),
         end: Offset.zero,

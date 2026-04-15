@@ -7,9 +7,7 @@ class ResourcesPane extends StatelessWidget {
   Widget build(BuildContext context) {
     return const ColoredBox(
       color: Color(0xFFF9FAFB),
-      child: Center(
-        child: Text('Resources'),
-      ),
+      child: Center(child: Text('Resources')),
     );
   }
 }

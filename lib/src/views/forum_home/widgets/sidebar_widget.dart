@@ -7,9 +7,7 @@ class SidebarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const ColoredBox(
       color: Color(0xFFF3F4F6),
-      child: Center(
-        child: Text('Sidebar'),
-      ),
+      child: Center(child: Text('Sidebar')),
     );
   }
 }
