@@ -15,7 +15,8 @@ class PostList extends StatelessWidget {
           child: ListTile(
             title: Text('Post ${index + 1}'),
             subtitle: const Text('Placeholder post content'),
-            onTap: () => context.go('/posts/${index + 1}'),
+            // Use push to preserve a clear in-app back stack.
+            onTap: () => context.push('/posts/${index + 1}'),
           ),
         );
       },
