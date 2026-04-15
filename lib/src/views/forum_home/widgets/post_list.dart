@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class PostList extends StatelessWidget {
   const PostList({super.key});
@@ -14,6 +15,7 @@ class PostList extends StatelessWidget {
           child: ListTile(
             title: Text('Post ${index + 1}'),
             subtitle: const Text('Placeholder post content'),
+            onTap: () => context.go('/posts/${index + 1}'),
           ),
         );
       },
