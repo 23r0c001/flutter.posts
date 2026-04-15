@@ -9,6 +9,7 @@ class PostDetailPage extends StatelessWidget {
   });
 
   @override
+  /// Minimal placeholder detail view sourced from route path parameter `postId`.
   Widget build(BuildContext context) {
     return Center(
       child: Card(

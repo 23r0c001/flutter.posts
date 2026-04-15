@@ -6,22 +6,20 @@ import '../views/forum_home/forum_home_page.dart';
 import '../views/forum_home/post_detail_page.dart';
 import '../views/forum_home/widgets/post_list.dart';
 
-/* final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
-  routes: [
-    GoRoute(path: '/', builder: (context, state) => const ForumHomePage()),
-  ],
-);
- */
 
+
+/// Top-level app router.
+/// Uses a shell so sidebar/resources persist while center content routes change.
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    // Persistent forum shell route; child changes with nested route path.
     ShellRoute(
       builder: (context, state, child) => ForumHomePage(child: child),
       routes: [
         GoRoute(
           path: '/',
+          // Forum feed entry route.
           pageBuilder: (context, state) => _buildAdaptivePage(
             state: state,
             child: const PostList(),
@@ -29,6 +27,7 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: '/posts/:postId',
+          // Detail route rendered in the same shell center pane.
           pageBuilder: (context, state) {
             final postId = state.pathParameters['postId'] ?? '';
             return _buildAdaptivePage(
@@ -49,6 +48,7 @@ Page<void> _buildAdaptivePage({
   required GoRouterState state,
   required Widget child,
 }) {
+  // Web gets instant route swaps so old content does not linger/fade.
   if (kIsWeb) {
     return NoTransitionPage<void>(
       key: state.pageKey,
@@ -56,12 +56,14 @@ Page<void> _buildAdaptivePage({
     );
   }
 
+  // Mobile gets a forward push slide for a native navigation feel.
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
     transitionDuration: const Duration(milliseconds: 220),
     reverseTransitionDuration: const Duration(milliseconds: 180),
     transitionsBuilder: (context, animation, secondaryAnimation, routeChild) {
+      // Enter from right to left; mirrors common Android/iOS push patterns.
       final slideTween = Tween<Offset>(
         begin: const Offset(1, 0),
         end: Offset.zero,

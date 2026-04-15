@@ -13,6 +13,7 @@ class ForumHomePage extends StatelessWidget {
   });
 
   @override
+  /// Builds the forum shell and delegates responsive behavior to shared layout.
   Widget build(BuildContext context) {
     return Scaffold(
       body: ResponsiveLayout(
@@ -22,6 +23,8 @@ class ForumHomePage extends StatelessWidget {
     );
   }
 
+  /// Desktop 2/5/3 split:
+  /// Sidebar | Route child (feed/detail) | Resources pane.
   Widget _buildDesktopLayout(Widget centerChild) {
     return Row(
       children: [
@@ -32,6 +35,7 @@ class ForumHomePage extends StatelessWidget {
     );
   }
 
+  /// Mobile keeps only the active route child to maximize available space.
   Widget _buildMobileLayout(Widget centerChild) {
     return centerChild;
   }

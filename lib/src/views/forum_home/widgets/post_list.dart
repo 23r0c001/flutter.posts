@@ -5,12 +5,14 @@ class PostList extends StatelessWidget {
   const PostList({super.key});
 
   @override
+  /// Placeholder post feed used for shell routing and transition validation.
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: 10,
       separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
+        // Keep IDs deterministic for URL demo routes: /posts/1, /posts/2, ...
         return Card(
           child: ListTile(
             title: Text('Post ${index + 1}'),
