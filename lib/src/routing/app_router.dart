@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../views/forum_home/forum_home_page.dart';
+import '../views/forum_home/forum_shell.dart';
 import '../views/forum_home/post_detail_page.dart';
 import '../views/forum_home/widgets/post_list.dart';
 
@@ -13,7 +13,7 @@ final GoRouter appRouter = GoRouter(
   routes: [
     // Persistent forum shell route; child changes with nested route path.
     ShellRoute(
-      builder: (context, state, child) => ForumHomePage(child: child),
+      builder: (context, state, child) => ForumShell(child: child),
       routes: [
         GoRoute(
           path: '/',
