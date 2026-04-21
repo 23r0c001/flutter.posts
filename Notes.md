@@ -12,3 +12,4 @@ Does this "Content-First" scaling make sense for your Hub layout?
 # Todo
 - Put a search bar at the top of the shell
 - Download pregnancy app, check web, see if they have subreddit concept
+- View for clicking on an image should get rid of shell
