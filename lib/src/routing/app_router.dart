@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../shared/constants/app_routes.dart';
 import '../views/forum_home/forum_shell.dart';
-import '../views/forum_home/post_detail_page.dart';
+import '../views/forum_home/thread_comments_page.dart';
 import '../views/forum_home/widgets/post_list.dart';
 
 /// Top-level app router.
@@ -22,13 +23,16 @@ final GoRouter appRouter = GoRouter(
               _buildAdaptivePage(state: state, child: const PostList()),
         ),
         GoRoute(
-          path: '/posts/:postId',
-          // Detail route rendered in the same shell center pane.
+          // Reddit-like thread route:
+          // /t/:group/comments/:threadId
+          path:
+              '/${AppRoutes.groupPrefix}/:group/${AppRoutes.commentsSegment}/:threadId',
+          // Thread route rendered in the same shell center pane.
           pageBuilder: (context, state) {
-            final postId = state.pathParameters['postId'] ?? '';
+            final threadId = state.pathParameters['threadId'] ?? '';
             return _buildAdaptivePage(
               state: state,
-              child: PostDetailPage(postId: postId),
+              child: ThreadCommentsPage(threadId: threadId),
             );
           },
         ),
