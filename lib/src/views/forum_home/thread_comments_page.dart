@@ -83,13 +83,14 @@ class ThreadCommentsPage extends StatelessWidget {
   /// Opens the media overlay without changing the current route.
   ///
   /// `barrierDismissible: false` means tapping outside the dialog will not
-  /// close it. Combined with `PopScope` inside the dialog, only `X` closes it.
+  /// close it. Back navigation and `X` still dismiss the dialog.
   Future<void> _openMediaViewer(
     BuildContext context, {
     required String mediaId,
   }) {
     return showDialog<void>(
       context: context,
+      useRootNavigator: false,
       barrierDismissible: false,
       builder: (context) => MediaViewerDialog(mediaId: mediaId),
     );

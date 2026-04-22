@@ -9,18 +9,14 @@ import 'package:flutter/material.dart';
 class MediaViewerDialog extends StatelessWidget {
   final String mediaId;
 
-  const MediaViewerDialog({
-    super.key,
-    required this.mediaId,
-  });
+  const MediaViewerDialog({super.key, required this.mediaId});
 
   @override
   /// Builds a dark viewer canvas with a fixed close action.
   Widget build(BuildContext context) {
-    // `PopScope(canPop: false)` prevents system/browser back from dismissing
-    // the dialog. This enforces the "close only via X" product rule.
+    // Allow system/browser back to dismiss this dialog route.
     return PopScope(
-      canPop: false,
+      canPop: true,
       child: Dialog(
         backgroundColor: Colors.black,
         insetPadding: const EdgeInsets.all(12),
