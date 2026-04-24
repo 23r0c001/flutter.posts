@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'src/routing/app_router.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
   // 1. Ensure Flutter is ready (required for C#-style async setup)
@@ -8,6 +9,10 @@ void main() async {
   // 2. Initialize your Local SQLite DB here later
   // await LocalDb.init();
 
+  // 3. Show URLs in browser (largely for dev/debug)
+  usePathUrlStrategy();
+
+  // 4. Party
   runApp(const MyApp());
 }
 
