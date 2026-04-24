@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../shared/navigation/lightbox_controller.dart';
-import '../../shared/widgets/responsive_layout.dart';
+import 'package:flutter_posts/src/shared/navigation/lightbox_controller.dart';
+import 'package:flutter_posts/src/shared/widgets/responsive_layout.dart';
 
 /// Thread page that shows post context at top and comments below.
 class ThreadCommentsPage extends StatelessWidget {

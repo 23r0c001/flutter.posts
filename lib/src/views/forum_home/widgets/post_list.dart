@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../shared/constants/app_routes.dart';
+import 'package:flutter_posts/src/shared/constants/app_routes.dart';
 
 class PostList extends StatelessWidget {
   const PostList({super.key});
@@ -23,8 +22,8 @@ class PostList extends StatelessWidget {
         );
         return Card(
           child: ListTile(
-            title: Text('Post ${index + 1}'),
-            subtitle: const Text('Placeholder post content'),
+            title: Text('Group ${index + 1}'),
+            subtitle: const Text('Placeholder group content'),
             // Use push to preserve a clear in-app back stack.
             onTap: () => context.push(threadPath),
           ),

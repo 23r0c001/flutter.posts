@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_posts/src/shared/constants/app_routes.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../shared/constants/app_routes.dart';
 
 class SidebarWidget extends StatelessWidget {
   const SidebarWidget({super.key});

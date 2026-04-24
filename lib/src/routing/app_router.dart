@@ -1,12 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../shared/constants/app_routes.dart';
-import '../views/forum_home/forum_shell.dart';
-import '../views/forum_home/me_home_page.dart';
-import '../views/forum_home/thread_comments_page.dart';
-import '../views/forum_home/widgets/post_list.dart';
+import 'package:flutter_posts/src/shared/constants/app_routes.dart';
+import 'package:flutter_posts/src/views/forum_home/forum_shell.dart';
+import 'package:flutter_posts/src/views/forum_home/me_home_page.dart';
+import 'package:flutter_posts/src/views/forum_home/thread_comments_page.dart';
+import 'package:flutter_posts/src/views/forum_home/widgets/post_list.dart';
 
 /// Top-level app router.
 /// Uses a shell so sidebar/resources persist while center content routes change.

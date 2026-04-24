@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_posts/src/shared/navigation/lightbox_controller.dart';
+import 'package:flutter_posts/src/shared/widgets/responsive_layout.dart';
 
-import '../../shared/navigation/lightbox_controller.dart';
-import '../../shared/widgets/responsive_layout.dart';
 import 'widgets/media_viewer_dialog.dart';
 import 'widgets/resources_pane.dart';
 import 'widgets/sidebar_widget.dart';
