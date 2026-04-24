@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/navigation/lightbox_controller.dart';
 import '../../shared/widgets/responsive_layout.dart';
+import 'widgets/media_viewer_dialog.dart';
 import 'widgets/resources_pane.dart';
 import 'widgets/sidebar_widget.dart';
 
@@ -17,10 +19,37 @@ class ForumShell extends StatelessWidget {
   @override
   /// Builds the forum shell and delegates responsive behavior to shared layout.
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ResponsiveLayout(
-        desktop: _buildDesktopLayout(child),
-        mobile: _buildMobileLayout(child),
+    return AnimatedBuilder(
+      animation: forumLightboxController,
+      builder: (context, _) => PopScope(
+        canPop: !forumLightboxController.isOpen,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop && forumLightboxController.isOpen) {
+            forumLightboxController.close();
+          }
+        },
+        child: Scaffold(
+          body: Stack(
+            children: [
+              ResponsiveLayout(
+                desktop: _buildDesktopLayout(child),
+                mobile: _buildMobileLayout(child),
+              ),
+              if (forumLightboxController.isOpen)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: const Color(0xCC000000),
+                    child: SafeArea(
+                      child: MediaViewerDialog(
+                        mediaId: forumLightboxController.mediaId,
+                        onClose: forumLightboxController.close,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

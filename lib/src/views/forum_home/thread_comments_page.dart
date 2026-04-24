@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/navigation/lightbox_controller.dart';
 import '../../shared/widgets/responsive_layout.dart';
-import 'widgets/media_viewer_dialog.dart';
 
 /// Thread page that shows post context at top and comments below.
 class ThreadCommentsPage extends StatelessWidget {
   final String threadId;
 
-  const ThreadCommentsPage({
-    super.key,
-    required this.threadId,
-  });
+  const ThreadCommentsPage({super.key, required this.threadId});
 
   @override
   /// Uses `ResponsiveLayout` directly so this page can diverge between
@@ -23,14 +20,16 @@ class ThreadCommentsPage extends StatelessWidget {
   }
 
   /// Builds placeholder post + comments content for the center pane.
-  Widget _buildThreadBody(
-    BuildContext context, {
-    required bool isDesktop,
-  }) {
+  Widget _buildThreadBody(BuildContext context, {required bool isDesktop}) {
     final double horizontalPadding = isDesktop ? 24 : 12;
 
     return ListView(
-      padding: EdgeInsets.fromLTRB(horizontalPadding, 20, horizontalPadding, 24),
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding,
+        20,
+        horizontalPadding,
+        24,
+      ),
       children: [
         Card(
           child: Padding(
@@ -45,9 +44,10 @@ class ThreadCommentsPage extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Text('Placeholder post body for this thread.'),
                 const SizedBox(height: 12),
-                // Tapping media opens an in-app dialog viewer.
+                // Tapping media toggles `#lightbox` URL state.
                 GestureDetector(
-                  onTap: () => _openMediaViewer(context, mediaId: 'hero-$threadId'),
+                  onTap: () =>
+                      forumLightboxController.open(mediaId: 'hero-$threadId'),
                   child: Container(
                     height: isDesktop ? 280 : 220,
                     decoration: BoxDecoration(
@@ -80,19 +80,4 @@ class ThreadCommentsPage extends StatelessWidget {
     );
   }
 
-  /// Opens the media overlay without changing the current route.
-  ///
-  /// `barrierDismissible: false` means tapping outside the dialog will not
-  /// close it. Back navigation and `X` still dismiss the dialog.
-  Future<void> _openMediaViewer(
-    BuildContext context, {
-    required String mediaId,
-  }) {
-    return showDialog<void>(
-      context: context,
-      useRootNavigator: false,
-      barrierDismissible: false,
-      builder: (context) => MediaViewerDialog(mediaId: mediaId),
-    );
-  }
 }
