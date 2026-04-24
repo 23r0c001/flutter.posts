@@ -8,7 +8,10 @@ class MeHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (_isLoggedIn()) {
       return Center(
-        child: Text('You are logged in.', style: Theme.of(context).textTheme.titleMedium),
+        child: Text(
+          'You are logged in.',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       );
     }
 
@@ -19,10 +22,7 @@ class MeHomePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FilledButton(
-              onPressed: () {},
-              child: const Text('Log In'),
-            ),
+            FilledButton(onPressed: () {}, child: const Text('Log In')),
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () {},
@@ -36,6 +36,6 @@ class MeHomePage extends StatelessWidget {
 
   /// Temporary auth gate until real session/auth state is wired.
   bool _isLoggedIn() {
-    return true;
+    return false;
   }
 }
