@@ -10,7 +10,7 @@ import 'package:flutter_posts/src/views/forum_home/widgets/post_list.dart';
 /// Top-level app router.
 /// Uses a shell so sidebar/resources persist while center content routes change.
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: AppRoutes.communityPath,
   routes: [
     // Persistent forum shell route; child changes with nested route path.
     ShellRoute(
