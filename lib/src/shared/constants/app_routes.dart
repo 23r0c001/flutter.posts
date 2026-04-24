@@ -3,6 +3,12 @@
 /// Keeping these in one file makes it easy to switch from `/t` to `/r`
 /// later without chasing string literals across routing and widgets.
 class AppRoutes {
+  /// Top-level shell section: community feed.
+  static const String communityPath = '/';
+
+  /// Top-level shell section: user profile/workspace.
+  static const String mePath = '/me';
+
   /// Temporary group prefix (`/t`) while we iterate on routing.
   static const String groupPrefix = 't';
 

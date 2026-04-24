@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../shared/constants/app_routes.dart';
 import '../views/forum_home/forum_shell.dart';
+import '../views/forum_home/me_home_page.dart';
 import '../views/forum_home/thread_comments_page.dart';
 import '../views/forum_home/widgets/post_list.dart';
 
@@ -17,10 +18,15 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state, child) => ForumShell(child: child),
       routes: [
         GoRoute(
-          path: '/',
+          path: AppRoutes.communityPath,
           // Forum feed entry route.
           pageBuilder: (context, state) =>
               _buildAdaptivePage(state: state, child: const PostList()),
+        ),
+        GoRoute(
+          path: AppRoutes.mePath,
+          pageBuilder: (context, state) =>
+              _buildAdaptivePage(state: state, child: const MeHomePage()),
         ),
         GoRoute(
           // Reddit-like thread route:
