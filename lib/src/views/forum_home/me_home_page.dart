@@ -6,17 +6,36 @@ class MeHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Text('Me', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 12),
-        Text(
-          'This is placeholder personal space content. '
-          'Profile, drafts, and settings can live here next.',
-          style: Theme.of(context).textTheme.bodyLarge,
+    if (_isLoggedIn()) {
+      return Center(
+        child: Text('You are logged in.', style: Theme.of(context).textTheme.titleMedium),
+      );
+    }
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 320),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton(
+              onPressed: () {},
+              child: const Text('Log In'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () {},
+              child: const Text('Create Account'),
+            ),
+          ],
         ),
-      ],
+      ),
     );
+  }
+
+  /// Temporary auth gate until real session/auth state is wired.
+  bool _isLoggedIn() {
+    return true;
   }
 }
