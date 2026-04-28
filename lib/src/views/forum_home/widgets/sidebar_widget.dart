@@ -14,16 +14,17 @@ class SidebarWidget extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         children: [
-          _SidebarNavItem(
-            label: 'Community',
-            isSelected: path == AppRoutes.communityPath || path.startsWith('/t/'),
-            onTap: () => context.go(AppRoutes.communityPath),
-          ),
           const SizedBox(height: 8),
           _SidebarNavItem(
             label: 'Me',
             isSelected: path == AppRoutes.mePath,
             onTap: () => context.go(AppRoutes.mePath),
+          ),
+          _SidebarNavItem(
+            label: 'Community',
+            isSelected:
+                path == AppRoutes.communityPath || path.startsWith('/t/'),
+            onTap: () => context.go(AppRoutes.communityPath),
           ),
         ],
       ),

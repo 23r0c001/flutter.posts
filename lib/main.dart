@@ -16,6 +16,9 @@ void main() async {
   runApp(const MyApp());
 }
 
+// TODO move constants to a separate file
+const appMint = Color(0xFF6EE7B7);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -25,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'My Forum App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: appMint),
         useMaterial3: true,
       ),
 

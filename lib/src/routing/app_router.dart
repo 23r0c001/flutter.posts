@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_posts/src/shared/constants/app_routes.dart';
 import 'package:flutter_posts/src/views/forum_home/forum_shell.dart';
+import 'package:flutter_posts/src/views/forum_home/group_feed_page.dart';
 import 'package:flutter_posts/src/views/forum_home/me_home_page.dart';
 import 'package:flutter_posts/src/views/forum_home/thread_comments_page.dart';
-import 'package:flutter_posts/src/views/forum_home/widgets/post_list.dart';
+import 'package:flutter_posts/src/views/forum_home/widgets/group_list.dart';
 
 /// Top-level app router.
 /// Uses a shell so sidebar/resources persist while center content routes change.
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: AppRoutes.communityPath,
   routes: [
     // Persistent forum shell route; child changes with nested route path.
     ShellRoute(
@@ -20,12 +21,22 @@ final GoRouter appRouter = GoRouter(
           path: AppRoutes.communityPath,
           // Forum feed entry route.
           pageBuilder: (context, state) =>
-              _buildAdaptivePage(state: state, child: const PostList()),
+              _buildAdaptivePage(state: state, child: const GroupList()),
         ),
         GoRoute(
           path: AppRoutes.mePath,
           pageBuilder: (context, state) =>
               _buildAdaptivePage(state: state, child: const MeHomePage()),
+        ),
+        GoRoute(
+          path: '/${AppRoutes.groupPrefix}/:group',
+          pageBuilder: (context, state) {
+            final group = state.pathParameters['group'] ?? '';
+            return _buildAdaptivePage(
+              state: state,
+              child: GroupFeedPage(group: group),
+            );
+          },
         ),
         GoRoute(
           // Reddit-like thread route:

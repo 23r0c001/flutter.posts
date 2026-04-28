@@ -15,6 +15,13 @@ class AppRoutes {
   /// Segment for thread-style comment pages.
   static const String commentsSegment = 'comments';
 
+  /// Utility helper for group feed route.
+  static String groupPath({
+    required String group,
+  }) {
+    return '/$groupPrefix/$group';
+  }
+
   /// Utility helper so callers do not hand-build thread paths.
   static String threadPath({
     required String group,
