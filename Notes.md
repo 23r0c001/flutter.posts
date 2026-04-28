@@ -13,3 +13,29 @@ Does this "Content-First" scaling make sense for your Hub layout?
 - Put a search bar at the top of the shell
 - Download pregnancy app, check web, see if they have subreddit concept
 - View for clicking on an image should get rid of shell
+
+# Color Themes
+## New files
+- `lib/src/theme/app_color_tokens.dart
+  - Raw color tokens (mint + neutrals + support colors)
+  - XAML resource-dictionary style “named colors”
+- lib/src/theme/app_theme_extensions.dart
+ - AppChromeColors ThemeExtension
+ - Semantic app colors for shell-specific UI (sidebar bg, selected bg, overlay, page bg)
+
+- lib/src/theme/app_theme.dart
+ - AppTheme.light() central builder
+ - Explicit ColorScheme (not fromSeed)
+ - Global component themes for:
+  - FilledButton
+  - OutlinedButton
+  - Card
+ - Includes AppChromeColors.light in ThemeData.extensions
+
+##Intent
+This is ready as a scaffold for gradual adoption, but not applied yet, exactly as requested.
+When you’re ready, swap in:
+ - theme: AppTheme.light()
+in MaterialApp.router and start replacing hardcoded colors with:
+ - Theme.of(context).colorScheme...
+ - Theme.of(context).extension<AppChromeColors>()!...
