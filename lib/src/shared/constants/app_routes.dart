@@ -8,6 +8,7 @@ class AppRoutes {
 
   /// Top-level shell section: user profile/workspace.
   static const String mePath = '/me';
+  static const String settingsPath = '/me/settings';
 
   /// Temporary group prefix (`/t`) while we iterate on routing.
   static const String groupPrefix = 't';
