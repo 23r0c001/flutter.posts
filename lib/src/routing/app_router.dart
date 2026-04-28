@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_posts/src/shared/constants/app_routes.dart';
@@ -13,44 +14,57 @@ import 'package:flutter_posts/src/views/forum_home/widgets/group_list.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.communityPath,
   routes: [
-    // Persistent forum shell route; child changes with nested route path.
-    ShellRoute(
-      builder: (context, state, child) => ForumShell(child: child),
-      routes: [
-        GoRoute(
-          path: AppRoutes.communityPath,
-          // Forum feed entry route.
-          pageBuilder: (context, state) =>
-              _buildAdaptivePage(state: state, child: const GroupList()),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          ForumShell(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.communityPath,
+              pageBuilder: (context, state) => _buildAdaptivePage(
+                state: state,
+                child: const GroupList(),
+              ),
+              routes: [
+                GoRoute(
+                  path: '${AppRoutes.groupPrefix}/:group',
+                  pageBuilder: (context, state) {
+                    final group = state.pathParameters['group'] ?? '';
+                    return _buildAdaptivePage(
+                      state: state,
+                      child: GroupFeedPage(group: group),
+                    );
+                  },
+                ),
+                GoRoute(
+                  // Reddit-like thread route:
+                  // /t/:group/comments/:threadId
+                  path:
+                      '${AppRoutes.groupPrefix}/:group/${AppRoutes.commentsSegment}/:threadId',
+                  // Thread route rendered in the same shell center pane.
+                  pageBuilder: (context, state) {
+                    final threadId = state.pathParameters['threadId'] ?? '';
+                    return _buildAdaptivePage(
+                      state: state,
+                      child: ThreadCommentsPage(threadId: threadId),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
-        GoRoute(
-          path: AppRoutes.mePath,
-          pageBuilder: (context, state) =>
-              _buildAdaptivePage(state: state, child: const MeHomePage()),
-        ),
-        GoRoute(
-          path: '/${AppRoutes.groupPrefix}/:group',
-          pageBuilder: (context, state) {
-            final group = state.pathParameters['group'] ?? '';
-            return _buildAdaptivePage(
-              state: state,
-              child: GroupFeedPage(group: group),
-            );
-          },
-        ),
-        GoRoute(
-          // Reddit-like thread route:
-          // /t/:group/comments/:threadId
-          path:
-              '/${AppRoutes.groupPrefix}/:group/${AppRoutes.commentsSegment}/:threadId',
-          // Thread route rendered in the same shell center pane.
-          pageBuilder: (context, state) {
-            final threadId = state.pathParameters['threadId'] ?? '';
-            return _buildAdaptivePage(
-              state: state,
-              child: ThreadCommentsPage(threadId: threadId),
-            );
-          },
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.mePath,
+              pageBuilder: (context, state) => _buildAdaptivePage(
+                state: state,
+                child: const MeHomePage(),
+              ),
+            ),
+          ],
         ),
       ],
     ),
@@ -69,24 +83,9 @@ Page<void> _buildAdaptivePage({
     return NoTransitionPage<void>(key: state.pageKey, child: child);
   }
 
-  // Mobile gets a forward push slide for a native navigation feel.
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    child: child,
-    transitionDuration: const Duration(milliseconds: 220),
-    reverseTransitionDuration: const Duration(milliseconds: 180),
-    transitionsBuilder: (context, animation, secondaryAnimation, routeChild) {
-      // Enter from right to left; mirrors common Android/iOS push patterns.
-      // TODO: Add left to right for back navigation
-      final slideTween = Tween<Offset>(
-        begin: const Offset(1, 0),
-        end: Offset.zero,
-      ).chain(CurveTween(curve: Curves.easeOutCubic));
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    return CupertinoPage<void>(key: state.pageKey, child: child);
+  }
 
-      return SlideTransition(
-        position: animation.drive(slideTween),
-        child: routeChild,
-      );
-    },
-  );
+  return MaterialPage<void>(key: state.pageKey, child: child);
 }

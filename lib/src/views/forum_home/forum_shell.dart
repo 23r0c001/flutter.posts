@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_posts/src/shared/constants/app_routes.dart';
 import 'package:flutter_posts/src/shared/navigation/lightbox_controller.dart';
 import 'package:flutter_posts/src/shared/widgets/responsive_layout.dart';
 import 'package:go_router/go_router.dart';
@@ -11,11 +10,11 @@ import 'widgets/sidebar_widget.dart';
 /// Persistent forum shell/layout.
 /// Keeps sidebar/resources mounted on desktop while swapping the center pane via routing.
 class ForumShell extends StatelessWidget {
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
   const ForumShell({
     super.key,
-    required this.child,
+    required this.navigationShell,
   });
 
   @override
@@ -35,8 +34,8 @@ class ForumShell extends StatelessWidget {
           body: Stack(
             children: [
               ResponsiveLayout(
-                desktop: _buildDesktopLayout(child),
-                mobile: _buildMobileLayout(child),
+                desktop: _buildDesktopLayout(navigationShell),
+                mobile: _buildMobileLayout(navigationShell),
               ),
               if (forumLightboxController.isOpen)
                 Positioned.fill(
@@ -80,8 +79,7 @@ class ForumShell extends StatelessWidget {
       return null;
     }
 
-    final String currentPath = GoRouterState.of(context).uri.path;
-    final int currentIndex = currentPath == AppRoutes.mePath ? 1 : 0;
+    final int currentIndex = navigationShell.currentIndex;
 
     return NavigationBar(
       selectedIndex: currentIndex,
@@ -98,11 +96,8 @@ class ForumShell extends StatelessWidget {
         ),
       ],
       onDestinationSelected: (index) {
-        final String targetPath = index == 1
-            ? AppRoutes.mePath
-            : AppRoutes.communityPath;
-        if (targetPath != currentPath) {
-          context.go(targetPath);
+        if (index != currentIndex) {
+          navigationShell.goBranch(index);
         }
       },
     );
