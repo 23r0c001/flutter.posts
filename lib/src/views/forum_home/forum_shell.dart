@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_posts/src/shared/constants/app_routes.dart';
 import 'package:flutter_posts/src/shared/navigation/lightbox_controller.dart';
 import 'package:flutter_posts/src/shared/widgets/responsive_layout.dart';
+import 'package:go_router/go_router.dart';
 
 import 'widgets/media_viewer_dialog.dart';
 import 'widgets/resources_pane.dart';
@@ -29,6 +31,7 @@ class ForumShell extends StatelessWidget {
           }
         },
         child: Scaffold(
+          bottomNavigationBar: _buildMobileBottomNavigation(context),
           body: Stack(
             children: [
               ResponsiveLayout(
@@ -69,6 +72,40 @@ class ForumShell extends StatelessWidget {
   /// Mobile keeps only the active route child to maximize available space.
   Widget _buildMobileLayout(Widget centerChild) {
     return centerChild;
+  }
+
+  Widget? _buildMobileBottomNavigation(BuildContext context) {
+    final bool isDesktop = MediaQuery.sizeOf(context).width > 800;
+    if (isDesktop) {
+      return null;
+    }
+
+    final String currentPath = GoRouterState.of(context).uri.path;
+    final int currentIndex = currentPath == AppRoutes.mePath ? 1 : 0;
+
+    return NavigationBar(
+      selectedIndex: currentIndex,
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.forum_outlined),
+          selectedIcon: Icon(Icons.forum),
+          label: 'Community',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline),
+          selectedIcon: Icon(Icons.person),
+          label: 'Me',
+        ),
+      ],
+      onDestinationSelected: (index) {
+        final String targetPath = index == 1
+            ? AppRoutes.mePath
+            : AppRoutes.communityPath;
+        if (targetPath != currentPath) {
+          context.go(targetPath);
+        }
+      },
+    );
   }
 }
 
