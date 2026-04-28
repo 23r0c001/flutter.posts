@@ -38,6 +38,9 @@ class ForumShell extends StatelessWidget {
           key: _scaffoldKey,
           appBar: _buildMobileAppBar(context),
           drawer: _buildMobileDrawer(context),
+          // Keep iOS back-swipe for route pop. If this stays true, a left-edge
+          // swipe can open the drawer instead of navigating back.
+          drawerEnableOpenDragGesture: false,
           bottomNavigationBar: _buildMobileBottomNavigation(context),
           body: Stack(
             children: [
@@ -84,6 +87,7 @@ class ForumShell extends StatelessWidget {
   Widget? _buildMobileBottomNavigation(BuildContext context) {
     final bool isDesktop = MediaQuery.sizeOf(context).width > 800;
     final String path = GoRouterState.of(context).uri.path;
+    // Settings is a full-screen modal-style page with its own app bar.
     if (isDesktop || path == AppRoutes.settingsPath) {
       return null;
     }
@@ -136,6 +140,7 @@ class ForumShell extends StatelessWidget {
     }
 
     if (navigationShell.currentIndex == 0) {
+      // Community branch: tiny top bar with hamburger only.
       return AppBar(
         toolbarHeight: 44,
         leading: IconButton(
@@ -160,6 +165,7 @@ class ForumShell extends StatelessWidget {
 
   Widget? _buildMobileDrawer(BuildContext context) {
     final bool isDesktop = MediaQuery.sizeOf(context).width > 800;
+    // Drawer exists only for mobile Community branch.
     if (isDesktop || navigationShell.currentIndex != 0) {
       return null;
     }
