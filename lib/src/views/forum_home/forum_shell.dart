@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_posts/src/shared/navigation/lightbox_controller.dart';
 import 'package:flutter_posts/src/shared/widgets/responsive_layout.dart';
@@ -79,19 +80,29 @@ class ForumShell extends StatelessWidget {
       return null;
     }
 
+    final bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final int currentIndex = navigationShell.currentIndex;
 
     return NavigationBar(
+      height: 56,
       selectedIndex: currentIndex,
-      destinations: const [
+      destinations: [
         NavigationDestination(
-          icon: Icon(Icons.forum_outlined),
-          selectedIcon: Icon(Icons.forum),
+          icon: Icon(
+            isIOS ? CupertinoIcons.chat_bubble_2 : Icons.forum_outlined,
+          ),
+          selectedIcon: Icon(
+            isIOS ? CupertinoIcons.chat_bubble_2_fill : Icons.forum,
+          ),
           label: 'Community',
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person),
+          icon: Icon(
+            isIOS ? CupertinoIcons.person : Icons.person_outline,
+          ),
+          selectedIcon: Icon(
+            isIOS ? CupertinoIcons.person_fill : Icons.person,
+          ),
           label: 'Me',
         ),
       ],
