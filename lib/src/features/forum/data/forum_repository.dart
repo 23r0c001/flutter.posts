@@ -52,4 +52,15 @@ abstract interface class ForumRepository {
     String? parentCommentId,
     required String body,
   });
+
+  // -- Comment likes -------------------------------------------------------
+
+  /// Like a comment as the signed-in user. Idempotent — liking a
+  /// comment that's already liked is a no-op so the UI can retry
+  /// safely after a network blip.
+  Future<void> likeComment(String commentId);
+
+  /// Remove the signed-in user's like from a comment. Idempotent —
+  /// unliking a comment that wasn't liked is a no-op.
+  Future<void> unlikeComment(String commentId);
 }

@@ -147,31 +147,113 @@ class _CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted =
+        theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    final displayName = comment.author?.displayName;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(12, 10, 8, 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (comment.author?.displayName != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    comment.author!.displayName!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              // Author + relative timestamp on the same line so each
+              // comment "header" reads naturally: "Sam · 5m ago".
+              Row(
+                children: [
+                  if (displayName != null) ...[
+                    Flexible(
+                      child: Text(
+                        displayName,
+                        style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
-                  ),
-                ),
-              Text(comment.body),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text('  ·  ', style: muted),
+                  ],
+                  Text(_formatRelativeTime(comment.createdAt), style: muted),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: Text(comment.body),
+              ),
+              _CommentLikeBar(comment: comment),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+/// Heart icon + like count row at the bottom of each comment.
+///
+/// Tapping fires `ThreadCubit.toggleCommentLike` which performs an
+/// optimistic update before the network round-trip, so the icon /
+/// count flip happens instantly.
+class _CommentLikeBar extends StatelessWidget {
+  final Comment comment;
+
+  const _CommentLikeBar({required this.comment});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final activeColor = theme.colorScheme.primary;
+    return Row(
+      children: [
+        IconButton(
+          icon: Icon(
+            comment.likedByMe ? Icons.favorite : Icons.favorite_border,
+            size: 20,
+            color: comment.likedByMe ? activeColor : null,
+          ),
+          tooltip: comment.likedByMe ? 'Unlike' : 'Like',
+          visualDensity: VisualDensity.compact,
+          padding: const EdgeInsets.all(6),
+          constraints: const BoxConstraints(),
+          onPressed: () =>
+              context.read<ThreadCubit>().toggleCommentLike(comment.id),
+        ),
+        const SizedBox(width: 2),
+        Text(
+          '${comment.likeCount}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: comment.likedByMe
+                ? activeColor
+                : theme.colorScheme.onSurfaceVariant,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Format a past `DateTime` as a compact relative string
+/// ("just now", "5m ago", "3h ago", "2d ago", "Mar 4").
+///
+/// Kept inline to avoid pulling in a dependency for one widget.
+/// Falls back to a short absolute date once differences exceed a
+/// week so timestamps stay informative on long-lived threads.
+String _formatRelativeTime(DateTime when) {
+  final diff = DateTime.now().difference(when);
+  if (diff.inSeconds < 45) return 'just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  if (diff.inDays < 7) return '${diff.inDays}d ago';
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+  return '${months[when.month - 1]} ${when.day}';
 }
 
 class _ErrorState extends StatelessWidget {

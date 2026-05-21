@@ -67,6 +67,59 @@ class ThreadCubit extends Cubit<ThreadState> {
       emit(ThreadError(error: error));
     }
   }
+
+  /// Toggle the current user's like on [commentId].
+  ///
+  /// Optimistic: flips `likedByMe` and adjusts `likeCount` locally
+  /// before the network call so the heart feels instant. On failure
+  /// we restore the previous comments snapshot and emit an error
+  /// state so the UI can surface it.
+  ///
+  /// No-op if the cubit isn't in `ThreadLoaded` or if the comment
+  /// can't be found (e.g. stale tap after a refresh).
+  Future<void> toggleCommentLike(String commentId) async {
+    final current = state;
+    if (current is! ThreadLoaded) return;
+
+    final index = current.comments.indexWhere((c) => c.id == commentId);
+    if (index == -1) return;
+
+    final original = current.comments[index];
+    final willLike = !original.likedByMe;
+    final updated = original.copyWith(
+      likedByMe: willLike,
+      // Clamp at zero defensively in case the server count was
+      // stale before we even loaded.
+      likeCount:
+          willLike ? original.likeCount + 1 : (original.likeCount - 1).clamp(0, 1 << 31),
+    );
+
+    final optimistic = [...current.comments]..[index] = updated;
+    emit(ThreadLoaded(post: current.post, comments: optimistic));
+
+    try {
+      if (willLike) {
+        await _forumRepository.likeComment(commentId);
+      } else {
+        await _forumRepository.unlikeComment(commentId);
+      }
+    } on AppError catch (error) {
+      // Revert. Only revert if we're still on the optimistic state;
+      // if something else (e.g. a refresh) has moved the cubit on,
+      // leave it alone.
+      if (state is ThreadLoaded &&
+          identical((state as ThreadLoaded).comments, optimistic)) {
+        emit(ThreadLoaded(post: current.post, comments: current.comments));
+      }
+      emit(ThreadError(error: error));
+    } catch (error, stackTrace) {
+      if (state is ThreadLoaded &&
+          identical((state as ThreadLoaded).comments, optimistic)) {
+        emit(ThreadLoaded(post: current.post, comments: current.comments));
+      }
+      emit(ThreadError(error: mapSupabaseError(error, stackTrace)));
+    }
+  }
 }
 
 /// Sealed state for `ThreadCubit`.

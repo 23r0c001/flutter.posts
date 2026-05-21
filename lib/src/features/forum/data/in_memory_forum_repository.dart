@@ -61,6 +61,15 @@ class InMemoryForumRepository implements ForumRepository {
   final Map<String, List<Post>> _postsByCommunity = {};
   final Map<String, List<Comment>> _commentsByPost = {};
 
+  /// Likes keyed by comment id → set of user ids who liked it.
+  /// `likeCount` and `likedByMe` are derived from this on every
+  /// `listComments` call so the model fields don't drift.
+  final Map<String, Set<String>> _likesByComment = {};
+
+  /// "Current user" in offline-dev mode. Mirrors the dev user that
+  /// `InMemoryAuthRepository` reports and matches `_defaultAuthors.first`.
+  String get _currentUserId => _defaultAuthors.first.id;
+
   /// Monotonically increasing counter for ID generation. Deterministic
   /// across runs given identical seed / addX call order.
   int _idCounter = 0;
@@ -163,7 +172,18 @@ class InMemoryForumRepository implements ForumRepository {
     final comments = _commentsByPost[postId] ?? const [];
     final sorted = [...comments]
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    return List.unmodifiable(sorted);
+    // Overlay live like state from `_likesByComment` so the in-memory
+    // repo's `likeCount` / `likedByMe` stay consistent with whatever
+    // `likeComment` / `unlikeComment` have set since the comment was
+    // first added.
+    final withLikes = sorted.map((c) {
+      final likers = _likesByComment[c.id];
+      return c.copyWith(
+        likeCount: likers?.length ?? 0,
+        likedByMe: likers?.contains(_currentUserId) ?? false,
+      );
+    }).toList(growable: false);
+    return List.unmodifiable(withLikes);
   }
 
   @override
@@ -186,6 +206,21 @@ class InMemoryForumRepository implements ForumRepository {
     );
     addComment(comment);
     return comment;
+  }
+
+  @override
+  Future<void> likeComment(String commentId) async {
+    await _wait();
+    _likesByComment.putIfAbsent(commentId, () => <String>{}).add(_currentUserId);
+  }
+
+  @override
+  Future<void> unlikeComment(String commentId) async {
+    await _wait();
+    final likers = _likesByComment[commentId];
+    if (likers == null) return;
+    likers.remove(_currentUserId);
+    if (likers.isEmpty) _likesByComment.remove(commentId);
   }
 
   // ---------------------------------------------------------------------------
@@ -301,9 +336,10 @@ class InMemoryForumRepository implements ForumRepository {
           final commentAuthor =
               _defaultAuthors[(pi + xi + 1) % _defaultAuthors.length];
           final commentAt = createdAt.add(Duration(minutes: xi * 17));
+          final commentId = _nextId('cm');
           addComment(
             Comment(
-              id: _nextId('cm'),
+              id: commentId,
               postId: post.id,
               authorId: commentAuthor.id,
               parentCommentId: null,
@@ -313,6 +349,15 @@ class InMemoryForumRepository implements ForumRepository {
               author: commentAuthor,
             ),
           );
+          // Seed a deterministic spread of likes so dev mode shows
+          // a mix of liked / unliked + non-zero counts. Every 3rd
+          // comment is liked by the dev user so the heart toggles.
+          final likers = <String>{};
+          for (int li = 0; li < (xi % 4); li++) {
+            likers.add(_defaultAuthors[li].id);
+          }
+          if (xi % 3 == 0) likers.add(_currentUserId);
+          if (likers.isNotEmpty) _likesByComment[commentId] = likers;
         }
       }
     }
