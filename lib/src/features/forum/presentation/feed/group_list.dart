@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posts/src/core/routing/app_routes.dart';
 import 'package:flutter_posts/src/features/forum/data/forum_repository.dart';
+import 'package:flutter_posts/src/features/forum/data/models/community.dart';
 import 'package:flutter_posts/src/features/forum/presentation/feed/cubit/communities_cubit.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,8 +13,9 @@ import 'package:go_router/go_router.dart';
 /// for v1; once we add `Realtime` or local caching we can move the
 /// cubit higher up.
 ///
-/// Layered as `<Provider> -> <View>` so the view can `context.read<...>`
-/// the cubit and `BlocBuilder` it.
+/// LAYOUT: shares the feed's edge-to-edge row pattern — full-width
+/// `InkWell` rows separated by a 1px divider, no `Card` inset. Keeps
+/// the visual language consistent across the Community branch.
 class GroupList extends StatelessWidget {
   const GroupList({super.key});
 
@@ -27,6 +29,9 @@ class GroupList extends StatelessWidget {
     );
   }
 }
+
+const double _kRowHPad = 16;
+const double _kRowVPad = 14;
 
 class _GroupListView extends StatelessWidget {
   const _GroupListView();
@@ -49,29 +54,15 @@ class _GroupListView extends StatelessWidget {
                 : RefreshIndicator(
                     onRefresh: context.read<CommunitiesCubit>().load,
                     child: ListView.separated(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.zero,
                       itemCount: communities.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      separatorBuilder: (context, _) => Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
                       itemBuilder: (context, index) {
-                        final community = communities[index];
-                        final path =
-                            AppRoutes.groupPath(group: community.slug);
-                        return Card(
-                          child: ListTile(
-                            title: Text(community.name),
-                            subtitle: community.description != null
-                                ? Text(
-                                    community.description!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  )
-                                : null,
-                            // `push` (not `go`) so back returns to the
-                            // list rather than the shell root. See
-                            // NavigationRules.md "drill-down" rule.
-                            onTap: () => context.push(path),
-                          ),
-                        );
+                        return _CommunityRow(community: communities[index]);
                       },
                     ),
                   ),
@@ -81,17 +72,91 @@ class _GroupListView extends StatelessWidget {
   }
 }
 
+class _CommunityRow extends StatelessWidget {
+  final Community community;
+
+  const _CommunityRow({required this.community});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surface,
+      child: InkWell(
+        // `push` (not `go`) so back returns to the list rather than
+        // the shell root. See NavigationRules.md "drill-down" rule.
+        onTap: () =>
+            context.push(AppRoutes.groupPath(group: community.slug)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            _kRowHPad,
+            _kRowVPad,
+            _kRowHPad,
+            _kRowVPad,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      community.name,
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    if (community.description != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        community.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final theme = Theme.of(context);
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Text(
-          'No communities yet.\nRun the supabase seed migration to populate.',
-          textAlign: TextAlign.center,
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.groups_outlined,
+              size: 40,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No communities to show yet.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ],
         ),
       ),
     );
