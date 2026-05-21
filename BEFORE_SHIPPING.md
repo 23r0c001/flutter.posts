@@ -12,9 +12,15 @@ ones.
 ## 1. Pick a bundle identifier you own
 
 **Why deferred:** `flutter create` ships the placeholder
-`com.example.flutterPosts`. Apple won't issue dev provisioning profiles
-for `com.example.*` so the moment you build to a physical device or
-add any iOS capability that requires a profile, signing fails.
+`com.example.flutterPosts`. Xcode's free personal-team signing happily
+provisions it onto your own devices for development, so device testing
+keeps working. What you CAN'T do with `com.example.*` is:
+  - Submit to TestFlight / App Store Connect — Apple rejects it.
+  - Enable paid capabilities that require a registered App ID (Sign In
+    with Apple, push notifications, iCloud, etc.).
+
+So device testing right now: fine. Anything past that: change the
+bundle ID first.
 
 **What to do:**
 
@@ -46,19 +52,23 @@ add any iOS capability that requires a profile, signing fails.
 
 ## 2. Enroll in the Apple Developer Program
 
-**Why deferred:** $99/yr, requires a real person/business identity. Not
-needed until you want to test on a physical device or submit to
-TestFlight.
+**Why deferred:** $99/yr, requires a real person/business identity.
+NOT needed for testing on your own devices — Xcode's free personal
+team handles that with a 7-day re-signing flow. You only need the paid
+Developer Program for:
+  - TestFlight / App Store submission.
+  - Paid capabilities (Sign In with Apple, push notifications, etc.).
+  - Distribution to anyone outside your own devices.
 
 **What to do:**
 
 - <https://developer.apple.com/programs/enroll/>
 - Once enrolled, in Xcode → Settings → Accounts, sign in with the same
-  Apple ID. Your team will appear there.
-- In the Runner target's Signing & Capabilities tab, set the team
-  to your developer team. Automatic signing will then start working
-  (assuming the bundle ID from Step 1 is owned by your team — Xcode
-  will auto-register it).
+  Apple ID. Your paid team will appear alongside (or replace) your
+  free personal team.
+- In the Runner target's Signing & Capabilities tab, switch the team
+  to your paid developer team. Automatic signing will then re-issue
+  long-lived profiles instead of the 7-day personal-team ones.
 
 ---
 
