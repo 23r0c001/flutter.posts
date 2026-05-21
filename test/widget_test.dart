@@ -1,30 +1,23 @@
-// This is a basic Flutter widget test.
+// Minimal smoke test — verifies the app boots and renders without throwing.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// The default `flutter create` template ships a counter-app test that
+// referenced a `MyApp` with an increment button — neither has ever
+// existed in this project. Replaced with a smoke test that's actually
+// meaningful for a forum app: pump the widget, verify SOMETHING renders.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_posts/src/app.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_posts/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('App boots and renders without throwing', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // `pumpWidget` returns after the first frame. If the widget tree
+    // threw during construction, this line never runs. Assert that
+    // SOMETHING (anything) rendered.
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

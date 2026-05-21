@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+	iOS app entitlements.
+
+	Currently used for:
+	  - Sign In with Apple (com.apple.developer.applesignin), required by
+	    App Store Guideline 4.8 because we also offer Google Sign-In.
+
+	IMPORTANT: this file is NOT automatically picked up by Xcode. To
+	activate it, open `ios/Runner.xcworkspace` and:
+	  1. Select the Runner target.
+	  2. Signing & Capabilities tab.
+	  3. Click "+ Capability" → "Sign In with Apple".
+	  4. Xcode adds CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements
+	     to the .pbxproj.
+	  5. Re-run `flutter build ios` to verify the entitlement is bundled.
+
+	You ALSO need an Apple Developer Program enrollment ($99/yr) for the
+	Sign In with Apple capability to be available to enable.
+
+	See README.md "Native mobile prerequisites".
+-->
+<plist version="1.0">
+<dict>
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+</dict>
+</plist>
