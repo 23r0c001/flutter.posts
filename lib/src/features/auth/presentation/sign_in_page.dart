@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_posts/src/core/env/env.dart';
 import 'package:flutter_posts/src/features/auth/presentation/bloc/auth_bloc.dart';
 
 /// The sign-in screen.
@@ -53,15 +54,19 @@ class _SignInPageState extends State<SignInPage> {
     context.read<AuthBloc>().add(const SignInWithAppleRequested());
   }
 
-  /// Apple Sign-In button is rendered ONLY on iOS. App Store Guideline
-  /// 4.8 requires offering it whenever third-party social sign-in (like
-  /// Google) is present on iOS. Showing it on Android is confusing and
-  /// not necessary — Apple's policies don't apply there.
+  /// Apple Sign-In button is rendered ONLY on iOS AND when explicitly
+  /// enabled via `--dart-define=ENABLE_APPLE_SIGN_IN=true`. App Store
+  /// Guideline 4.8 requires offering it whenever third-party social
+  /// sign-in (like Google) is present on iOS — but we keep it gated
+  /// behind a flag because actually USING it requires several things
+  /// (Apple Developer enrollment, real bundle ID, entitlement) that
+  /// aren't set up in a fresh checkout. See `Env.appleSignInEnabled`.
+  /// Re-enable before submitting to TestFlight.
   bool get _shouldShowApple {
     // `kIsWeb` first because `Platform.isIOS` throws on web. v1 doesn't
     // ship web but the guard is cheap insurance.
     if (kIsWeb) return false;
-    return Platform.isIOS;
+    return Platform.isIOS && Env.appleSignInEnabled;
   }
 
   /// Trivial email regex — Supabase will reject malformed emails too,

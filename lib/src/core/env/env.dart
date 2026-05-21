@@ -40,4 +40,28 @@ class Env {
   /// a working backend in front of you.
   static bool get isConfigured =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+
+  /// Whether Apple Sign-In is enabled in this build.
+  ///
+  /// Defaults to false because enabling Apple Sign-In requires three
+  /// things that aren't free or fast to set up:
+  ///   1. An Apple Developer Program enrollment ($99/yr).
+  ///   2. A real bundle identifier you own (NOT `com.example.*`).
+  ///   3. The `com.apple.developer.applesignin` entitlement enabled
+  ///      via Xcode's Signing & Capabilities tab, which writes a
+  ///      `Runner.entitlements` file referenced from project.pbxproj.
+  ///
+  /// Until you've done those, the "Continue with Apple" button is
+  /// hidden so a misconfigured build doesn't show a button that
+  /// throws at runtime. Flip it on with:
+  ///   `--dart-define=ENABLE_APPLE_SIGN_IN=true`
+  ///
+  /// App Store Guideline 4.8 only requires Apple Sign-In be offered
+  /// when your shipped app supports another third-party sign-in
+  /// (Google, etc.) — so this gating is fine during dev. Re-enable
+  /// it before submitting to TestFlight.
+  static const bool appleSignInEnabled = bool.fromEnvironment(
+    'ENABLE_APPLE_SIGN_IN',
+    defaultValue: false,
+  );
 }

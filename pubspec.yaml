@@ -44,6 +44,11 @@ dependencies:
   app_links: ^7.0.0
   sign_in_with_apple: ^8.0.0
   crypto: ^3.0.7
+  # `meta` ships with the Flutter SDK transitively but the analyzer's
+  # `depend_on_referenced_packages` lint wants it declared explicitly
+  # because we import it directly (for `@visibleForTesting` on the
+  # in-memory repositories).
+  meta: ^1.16.0
 
 dev_dependencies:
   flutter_test:
