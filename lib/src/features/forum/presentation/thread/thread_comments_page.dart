@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posts/src/core/util/relative_time.dart';
+import 'package:flutter_posts/src/features/auth/presentation/require_sign_in.dart';
 import 'package:flutter_posts/src/features/forum/data/forum_repository.dart';
 import 'package:flutter_posts/src/features/forum/data/models/comment.dart';
 import 'package:flutter_posts/src/features/forum/data/models/post.dart';
@@ -255,8 +256,11 @@ class _CommentLikeBar extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
           constraints: const BoxConstraints(),
-          onPressed: () =>
-              context.read<ThreadCubit>().toggleCommentLike(comment.id),
+          onPressed: () {
+            // Liking is a write — guests get the sign-in prompt instead.
+            if (!ensureSignedIn(context, action: 'like comments')) return;
+            context.read<ThreadCubit>().toggleCommentLike(comment.id);
+          },
         ),
         const SizedBox(width: 6),
         Text(

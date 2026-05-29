@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posts/src/core/env/env.dart';
 import 'package:flutter_posts/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// The sign-in screen.
 ///
@@ -84,9 +85,24 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Browsing is public, so guests reach sign-in on demand (from the
+    // "sign in to join" sheet or the Me tab) over a browsable stack.
+    // Give them an escape hatch back to browsing — but only when the
+    // route can actually pop (it can't if shown as a cold-start root).
+    final bool canBackOut = context.canPop();
+
     return Scaffold(
-      // No app bar — sign-in is the only place this page renders, and
-      // there's nothing to back-navigate to from a signed-out state.
+      appBar: canBackOut
+          ? AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                tooltip: 'Back to browsing',
+                onPressed: () => context.pop(),
+              ),
+            )
+          : null,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

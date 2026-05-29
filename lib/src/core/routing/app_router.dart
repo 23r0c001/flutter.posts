@@ -118,12 +118,20 @@ GoRouter createAppRouter(AuthBloc authBloc) {
 
 /// Routes the user based on auth state.
 ///
-///   AuthSignedOut / AuthSendingLink / AuthAuthenticating
-///       → force to /sign-in (the sign-in form handles the transient states)
-///   AuthLinkSent
-///       → force to /sign-in/magic-link-sent ("check your email")
+/// Reddit / What To Expect model: browsing is OPEN to everyone, so a
+/// signed-out user is never forced to the sign-in form. Sign-in is
+/// reached on demand (the "sign in to join" sheet, or the Me tab) and
+/// write actions are gated at the call site via `ensureSignedIn`, not
+/// here. This redirect therefore only handles the two cases where the
+/// auth flow itself needs to steer navigation:
+///
 ///   AuthSignedIn
-///       → if currently on a sign-in route, kick to /community; else stay put.
+///       → if stuck on a sign-in/magic-link page, kick to /community.
+///   AuthLinkSent
+///       → show /sign-in/magic-link-sent ("check your email").
+///   AuthSignedOut / AuthSendingLink / AuthAuthenticating
+///       → no redirect; let the user stay wherever they are (browsing
+///         or on the sign-in form they opened themselves).
 String? _authRedirect(AuthBloc authBloc, GoRouterState state) {
   final auth = authBloc.state;
   final path = state.matchedLocation;
@@ -143,8 +151,10 @@ String? _authRedirect(AuthBloc authBloc, GoRouterState state) {
     case AuthSendingLink():
     case AuthAuthenticating():
     case AuthSignedOut():
-      // Any not-yet-authenticated state belongs on the sign-in form.
-      return isOnSignIn ? null : AppRoutes.signInPath;
+      // Browsing is public — no forced redirect. These transient states
+      // only occur after the user has already opened /sign-in, and a
+      // guest browsing the feed simply stays put.
+      return null;
   }
 }
 

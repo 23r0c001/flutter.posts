@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_posts/src/core/routing/app_routes.dart';
 import 'package:flutter_posts/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// "Me" branch root.
 ///
-/// Only ever renders when `AuthState` is `AuthSignedIn` — the router
-/// redirects unauthenticated users to `/sign-in` before this page can
-/// be reached. Therefore the BlocBuilder only needs to handle the
-/// signed-in case; everything else is defensive fallback.
+/// Browsing is public, so this page can be reached by guests now. It
+/// renders one of two bodies based on `AuthState`:
+///   - signed in  → profile + sign-out (`_SignedInBody`).
+///   - signed out → a guest CTA inviting sign-in (`_GuestBody`).
+/// Transient auth states (sending link / authenticating) briefly fall
+/// through to the guest body, which is fine — they resolve in a frame.
 class MeHomePage extends StatelessWidget {
   const MeHomePage({super.key});
 
@@ -15,14 +19,59 @@ class MeHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        // Defensive fallback. If somehow we're rendered while not
-        // signed in, show a generic spinner (the router redirect will
-        // kick us back to /sign-in on the next frame).
-        if (state is! AuthSignedIn) {
-          return const Center(child: CircularProgressIndicator());
+        if (state is AuthSignedIn) {
+          return _SignedInBody(state: state);
         }
-        return _SignedInBody(state: state);
+        return const _GuestBody();
       },
+    );
+  }
+}
+
+/// Shown on the Me tab when the visitor is browsing as a guest.
+class _GuestBody extends StatelessWidget {
+  const _GuestBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Icon(
+                Icons.person_outline,
+                size: 48,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "You're browsing as a guest",
+                style: theme.textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Sign in to post, comment, and like.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => context.push(AppRoutes.signInPath),
+                child: const Text('Sign in'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

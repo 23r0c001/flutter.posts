@@ -4,9 +4,12 @@ globs: lib/**/*.dart
 ---
 
 # Project Core Context
-- **App Type:** Flutter Forum (Reddit-style).
+- **App Type:** Flutter Forum (Reddit-style, What To Expect-Leaning) for caregivers of people with disabilities.
+- **Platforms:** iOS first, Android next. NEVER web/desktop (see `AGENTS.md`).
 - **Architecture:** Feature-first with Repository Pattern.
-- **UI Strategy:** Web-first responsive using `LayoutBuilder`.
+- **UI Strategy:** Content-first responsive using `LayoutBuilder` — adapt to
+  screen WIDTH (an iPad in landscape gets the wide layout), not to platform.
+  Don't use `dart:html` or web-only packages, so the code stays iOS+Android portable.
 - **Navigation:** `GoRouter` with deep-linking support.
 
 ## Key Instructions
