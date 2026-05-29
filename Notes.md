@@ -1,4 +1,8 @@
 # Gemini Notes
+> NOTE: The "Web First" framing below is SUPERSEDED. The app is iOS-first,
+> Android next, and never ships web/desktop. See `AGENTS.md` for the
+> authoritative context. The portability tip (no `dart:html`) is still valid.
+
 - How to keep the "Mobile" door open:
 To ensure your "Web First" app doesn't become "Web Only," follow this one rule: Don't use dart:html.
 If you need to do something platform-specific (like picking a file), use a Flutter package (like file_picker) rather than a web-only library. This ensures that when you finally run flutter run -d ios, 100% of your code still compiles [7].
@@ -16,7 +20,7 @@ Does this "Content-First" scaling make sense for your Hub layout?
 
 # Color Themes
 ## New files
-- `lib/src/theme/app_color_tokens.dart
+- `lib/src/theme/app_color_tokens.dart`
   - Raw color tokens (mint + neutrals + support colors)
   - XAML resource-dictionary style “named colors”
 - lib/src/theme/app_theme_extensions.dart
@@ -32,7 +36,7 @@ Does this "Content-First" scaling make sense for your Hub layout?
   - Card
  - Includes AppChromeColors.light in ThemeData.extensions
 
-##Intent
+## Intent
 This is ready as a scaffold for gradual adoption, but not applied yet, exactly as requested.
 When you’re ready, swap in:
  - theme: AppTheme.light()

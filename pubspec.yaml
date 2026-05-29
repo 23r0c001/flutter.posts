@@ -35,6 +35,20 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   go_router: ^17.1.0
+  supabase_flutter: ^2.12.4
+  flutter_bloc: ^9.1.1
+  bloc: ^9.2.1
+  equatable: ^2.0.8
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
+  app_links: ^7.0.0
+  sign_in_with_apple: ^8.0.0
+  crypto: ^3.0.7
+  # `meta` ships with the Flutter SDK transitively but the analyzer's
+  # `depend_on_referenced_packages` lint wants it declared explicitly
+  # because we import it directly (for `@visibleForTesting` on the
+  # in-memory repositories).
+  meta: ^1.16.0
 
 dev_dependencies:
   flutter_test:
@@ -46,9 +60,61 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  freezed: ^3.2.5
+  json_serializable: ^6.14.0
+  build_runner: ^2.15.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+# -----------------------------------------------------------------------------
+# App icon generator configuration.
+#
+# Run with:    dart run flutter_launcher_icons
+# Requires:    assets/branding/app_icon.png to exist (1024×1024, opaque).
+#
+# Add the source image, then run the generator to produce all the
+# resized icon assets under ios/Runner/Assets.xcassets/AppIcon.appiconset
+# and android/app/src/main/res/mipmap-*/.
+# -----------------------------------------------------------------------------
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/branding/app_icon.png"
+  # Remove transparency on iOS (Apple rejects transparent icons).
+  remove_alpha_ios: true
+  # Generate an adaptive icon background on Android (modern launchers).
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/branding/app_icon.png"
+  # No web variant — we don't ship web in v1. Re-enable if web is revisited.
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
+
+# -----------------------------------------------------------------------------
+# Native splash screen generator.
+#
+# Run with:    dart run flutter_native_splash:create
+# Requires:    assets/branding/splash.png to exist.
+#
+# Generates platform-native splash screens that match the app's
+# `scaffoldBackgroundColor`. Updated to remove on first frame to avoid
+# the brief "white flash" between native splash and first Flutter frame.
+# -----------------------------------------------------------------------------
+flutter_native_splash:
+  # AppColorTokens.slate050 — keep in sync with `app_theme.dart`.
+  color: "#F8FAFC"
+  image: "assets/branding/splash.png"
+  android_12:
+    image: "assets/branding/splash.png"
+    color: "#F8FAFC"
+  # Don't ship to web in v1.
+  web: false
 
 # The following section is specific to Flutter packages.
 flutter:

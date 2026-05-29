@@ -1,30 +1,30 @@
-// This is a basic Flutter widget test.
+// Minimal smoke test — verifies the app boots and renders without throwing.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// We pass the test-default zero-latency in-memory fakes through
+// `MyApp`'s override hooks. This avoids any pending `Future.delayed`
+// timers at teardown, which would otherwise trip the test framework's
+// "A Timer is still pending" invariant.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_posts/src/app.dart';
+import 'package:flutter_posts/src/features/auth/data/in_memory_auth_repository.dart';
+import 'package:flutter_posts/src/features/forum/data/in_memory_forum_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_posts/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App boots and renders without throwing', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MyApp(
+        authRepositoryOverride: InMemoryAuthRepository(),
+        forumRepositoryOverride: InMemoryForumRepository(seed: false),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // `pumpWidget` returns after the first frame. If the widget tree
+    // threw during construction, this line never runs. Assert that
+    // SOMETHING (anything) rendered.
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

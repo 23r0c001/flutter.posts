@@ -33,6 +33,16 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Env vars passed to the app via `--dart-define-from-file=.env.json`.
+# Contains Supabase URL + anon key — see SupabaseSetup.md.
+# `.env.json.example` is the safe-to-commit template.
+.env.json
+.env
+
+# Supabase CLI local state (auto-generated). Migrations under
+# `supabase/migrations/` ARE committed; only the local Docker state isn't.
+.supabase/
+
 # Symbolication related
 app.*.symbols
 
